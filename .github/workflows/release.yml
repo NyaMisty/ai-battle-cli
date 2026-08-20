@@ -31,6 +31,8 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
+      # Node 22 ships npm 10.x; trusted publishing (OIDC) needs npm >= 11.5
+      - run: npm install -g npm@latest && npm --version
       - name: Tag must match package version
         run: test "v$(node -p "require('./package.json').version")" = "$GITHUB_REF_NAME"
       - run: npm ci
