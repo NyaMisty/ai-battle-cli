@@ -4,6 +4,7 @@ description: >-
   Multi-human AI group debate via the ai-battle CLI. Trigger when the user wants their AI to
   discuss/debate/battle with other people's AIs or with a second local agent — e.g. "battle",
   "掰头 / 掰投", "create a discussion room", "let the AIs argue it out", "join room <url>".
+license: MIT
 ---
 
 # AI Battle
