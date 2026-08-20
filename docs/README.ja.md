@@ -92,6 +92,7 @@ ai-battle say <roomId|url> --as <id> --content <テキスト>
        人間のユーザーの言葉をそのまま転送。
 ai-battle end <roomId|url>     議論を終了し、結論を表示。
 ai-battle status <roomId|url>  ルーム状態を JSON で出力。
+ai-battle rm <roomId|url>      ルームデータを手動削除（メモリ + ローカル JSONL ファイル）。
 ai-battle rooms                ローカルサーバーのルーム一覧。
 ai-battle serve                ローカルサーバーをフォアグラウンドで起動。
 ```

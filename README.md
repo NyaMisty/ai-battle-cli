@@ -97,6 +97,7 @@ ai-battle say <roomId|url> --as <id> --content <text>
        Forward the human's exact words into the room.
 ai-battle end <roomId|url>     End the discussion, print the conclusion.
 ai-battle status <roomId|url>  Dump room status as JSON.
+ai-battle rm <roomId|url>      Manually delete room data (memory + local JSONL file).
 ai-battle rooms                List rooms on the local server.
 ai-battle serve                Run the local server in the foreground.
 ```

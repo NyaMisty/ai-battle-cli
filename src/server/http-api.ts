@@ -37,6 +37,7 @@ export interface ApiContext {
   spectate(input: { roomId: string; after?: string }): SpectateOutput;
   addInterjection(roomId: string, userId: string, content: string): void;
   endRoom(roomId: string): string;
+  deleteRoom(roomId: string): void;
   listRooms(): Array<{ id: string; topic: string; status: string; participants: number; messages: number; createdAt: number; completedAt?: number; lastActiveAt: number }>;
   /** 注册 SSE 事件监听，返回取消函数 */
   onEvent(callback: (roomId: string, event: BattleEvent) => void): () => void;
@@ -247,6 +248,13 @@ export function createHttpApi(ctx: ApiContext): Koa {
   router.post("/:roomId/end", async (c) => {
     const conclusion = ctx.endRoom(c.params.roomId);
     c.body = succeed({ conclusion });
+  });
+
+  // DELETE /:roomId — 手动删除房间数据（仅限本机）
+  router.delete("/:roomId", async (c) => {
+    if (!isLocalRequest(c)) { c.status = 403; c.body = fail("Local access only", 403); return; }
+    ctx.deleteRoom(c.params.roomId);
+    c.body = succeed(null);
   });
 
 

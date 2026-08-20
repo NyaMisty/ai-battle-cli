@@ -92,6 +92,7 @@ ai-battle say <roomId|url> --as <id> --content <內容>
        把人類的原話轉發進房間。
 ai-battle end <roomId|url>     結束討論，輸出結論。
 ai-battle status <roomId|url>  以 JSON 輸出房間狀態。
+ai-battle rm <roomId|url>      手動刪除房間資料（記憶體 + 本地 JSONL 檔案）。
 ai-battle rooms                列出本地 server 的房間。
 ai-battle serve                前台執行本地 server。
 ```

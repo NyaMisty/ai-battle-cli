@@ -48,6 +48,7 @@ function createMockContext(): ApiContext {
     }),
     addInterjection: vi.fn(),
     endRoom: vi.fn().mockReturnValue("Discussion concluded"),
+    deleteRoom: vi.fn(),
     onEvent: vi.fn().mockReturnValue(() => {}),
   };
 }

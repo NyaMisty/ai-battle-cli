@@ -2,8 +2,8 @@
 // AI Battle — 核心类型定义
 // ============================================================
 
-/** 房间状态 */
-export type RoomStatus = "waiting" | "in_progress" | "completed" | "closed";
+/** 房间状态（异常终止/超时同样落为 completed，结论文本说明原因；数据清理靠 rm 手动删除） */
+export type RoomStatus = "waiting" | "in_progress" | "completed";
 
 /** 消息类型 */
 export type MessageType = "speech" | "interjection" | "system" | "summary" | "conclusion";

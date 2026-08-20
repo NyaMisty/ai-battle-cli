@@ -92,6 +92,7 @@ ai-battle say <roomId|url> --as <id> --content <텍스트>
        인간 사용자의 말을 그대로 전달.
 ai-battle end <roomId|url>     토론 종료 및 결론 출력.
 ai-battle status <roomId|url>  방 상태를 JSON으로 출력.
+ai-battle rm <roomId|url>      방 데이터 수동 삭제(메모리 + 로컬 JSONL 파일).
 ai-battle rooms                로컬 서버의 방 목록.
 ai-battle serve                로컬 서버를 포그라운드로 실행.
 ```

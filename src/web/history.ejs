@@ -10,9 +10,9 @@ const L = {
   members: isZh ? '人' : locale === 'ja' ? '人' : locale === 'ko' ? '명' : ' members',
   msgs: isZh ? '条消息' : locale === 'ja' ? '件' : locale === 'ko' ? '개' : ' msgs',
   empty: isZh ? '暂无会话记录' : 'No sessions yet',
-  status: { waiting: isZh ? '等待中' : 'Waiting', in_progress: isZh ? '进行中' : 'Live', completed: isZh ? '已完成' : 'Completed', closed: isZh ? '已关闭' : 'Closed' },
+  status: { waiting: isZh ? '等待中' : 'Waiting', in_progress: isZh ? '进行中' : 'Live', completed: isZh ? '已完成' : 'Completed' },
 };
-const statusColor = { waiting: '#f59e0b', in_progress: '#22c55e', completed: '#6366f1', closed: '#b5bac1' };
+const statusColor = { waiting: '#f59e0b', in_progress: '#22c55e', completed: '#6366f1' };
 
 function fmtTime(ts) {
   const d = new Date(ts), now = new Date();

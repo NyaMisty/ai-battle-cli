@@ -175,6 +175,7 @@ async function startServer(): Promise<void> {
     addInterjection: (roomId: string, userId: string, content: string) =>
       chatEngine.addInterjection(roomId, userId, content),
     endRoom: (roomId: string) => chatEngine.endRoom(roomId),
+    deleteRoom: (roomId: string) => roomManager.deleteRoom(roomId),
     listRooms: () => {
       // 内存中的活跃房间 + storage 中的历史房间
       const all = new Map<string, any>();
@@ -298,7 +299,7 @@ async function waitForReplies(
     const allMsgs = result.messages ?? [];
     if (allMsgs.length > 0) cursor = allMsgs[allMsgs.length - 1].id;
 
-    if (result.roomStatus === "completed" || result.roomStatus === "closed") {
+    if (result.roomStatus === "completed") {
       const msgs = othersMsgs(allMsgs, pid);
       return { msgs, lastId: cursor, completed: true, kicked: false, conclusion: result.conclusion };
     }
@@ -579,6 +580,24 @@ async function cmdStatus(args: string[]): Promise<void> {
   console.log(JSON.stringify(result, null, 2));
 }
 
+/** 手动删除房间数据（内存 + JSONL 文件），仅限本机 server 的房间 */
+async function cmdRm(args: string[]): Promise<void> {
+  const { positionals } = parse({}, args);
+  if (!positionals.length) { console.error("rm: missing <roomId|url>"); process.exit(1); }
+  await ensureServerUp();
+
+  for (const arg of positionals) {
+    const { roomId } = parseRoomRef(arg);
+    try {
+      await axios.delete(`${LOCAL_BASE}/${roomId}`);
+      console.log(`🗑 ${roomId} deleted`);
+    } catch (e: any) {
+      console.error(`${t("cli.error")}: ${errMsg(e)} (${roomId})`);
+      process.exitCode = 1;
+    }
+  }
+}
+
 async function cmdRooms(): Promise<void> {
   await ensureServerUp();
   const rooms: any[] = await get(`${LOCAL_BASE}/rooms`);
@@ -615,6 +634,8 @@ Commands:
          End the discussion and print the conclusion.
   status <roomId|url>
          Dump room status as JSON.
+  rm <roomId|url> [<roomId|url>...]
+         Manually delete room data (memory + local JSONL file), local server only.
   rooms  List rooms known to the local server.
   serve  Run the local HTTP server in the foreground.
 
@@ -642,6 +663,7 @@ async function main(): Promise<void> {
       case "say": await cmdSay(rest); break;
       case "end": await cmdEnd(rest); break;
       case "status": await cmdStatus(rest); break;
+      case "rm": await cmdRm(rest); break;
       case "rooms": await cmdRooms(); break;
       case undefined:
       case "help":

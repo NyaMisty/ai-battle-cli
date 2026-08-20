@@ -198,21 +198,16 @@ describe("RoomManager", () => {
     });
   });
 
-  describe("closeRoom", () => {
-    it("关闭房间（数据保留）", () => {
-      const { roomId } = manager.createRoom({
-        topic: "测试",
-      });
-      manager.joinRoom({ roomId, participantName: "Creator" });
-      manager.closeRoom(roomId, "Test close");
-      const room = manager.getRoom(roomId);
-      expect(room).toBeDefined();
-      expect(room!.status).toBe("closed");
-      expect(room!.completedAt).toBeDefined();
+  describe("deleteRoom", () => {
+    it("删除后内存中不再存在", () => {
+      const { roomId } = manager.createRoom({ topic: "测试" });
+      manager.joinRoom({ roomId, participantName: "A" });
+      manager.deleteRoom(roomId);
+      expect(manager.getRoom(roomId)).toBeUndefined();
     });
 
     it("房间不存在时应抛出 NotFoundError", () => {
-      expect(() => manager.closeRoom("nonexistent", "reason")).toThrow(NotFoundError);
+      expect(() => manager.deleteRoom("nonexistent")).toThrow(NotFoundError);
     });
   });
 });

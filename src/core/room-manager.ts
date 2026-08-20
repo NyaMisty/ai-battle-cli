@@ -172,13 +172,11 @@ export class RoomManager {
     this.storage?.appendEvent(roomId, { type: "room_completed", data: { conclusion, completedAt: room.completedAt } });
   }
 
-  /** 关闭房间，保留数据 */
-  closeRoom(roomId: string, reason: string): void {
+  /** 手动删除房间：内存 + 持久化数据一起清（ai-battle rm） */
+  deleteRoom(roomId: string): void {
     const room = this.rooms.get(roomId);
     if (!room) throw new NotFoundError();
-    room.status = "closed";
-    room.conclusion = room.conclusion ?? reason;
-    room.completedAt = Date.now();
-    this.storage?.appendEvent(roomId, { type: "room_completed", data: { conclusion: room.conclusion, completedAt: room.completedAt } });
+    this.rooms.delete(roomId);
+    this.storage?.deleteRoom(roomId);
   }
 }

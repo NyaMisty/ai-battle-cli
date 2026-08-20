@@ -43,7 +43,7 @@ export class Storage {
   loadActiveRooms(): Map<string, Room> {
     const rooms = new Map<string, Room>();
     for (const [id, room] of this.loadAllRooms()) {
-      if (room.status !== "completed" && room.status !== "closed") {
+      if (room.status !== "completed") {
         rooms.set(id, room);
       }
     }

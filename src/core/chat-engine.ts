@@ -66,10 +66,10 @@ export class ChatEngine {
 
     const now = Date.now();
 
-    // 1. 房间整体空闲超过 20 分钟 → 关闭
+    // 1. 房间整体空闲超过 20 分钟 → 结束（原因写入结论，状态统一为 completed）
     const lastActivity = Math.max(...Array.from(room.participants.values()).map(p => p.lastActiveAt));
     if (now - lastActivity > ChatEngine.ROOM_IDLE_TIMEOUT) {
-      this.roomManager.closeRoom(roomId, "Idle timeout");
+      this.roomManager.completeRoom(roomId, "Idle timeout");
       this.emit(roomId, { type: "discussion_completed", conclusion: "Idle timeout" });
       return;
     }
@@ -99,7 +99,7 @@ export class ChatEngine {
 
     // 3. 所有人都掉线了 → 结束
     if (disconnected.length > 0 && room.participants.size === 0) {
-      this.roomManager.closeRoom(roomId, "All participants disconnected");
+      this.roomManager.completeRoom(roomId, "All participants disconnected");
       this.emit(roomId, { type: "discussion_completed", conclusion: "All participants disconnected" });
     }
   }
