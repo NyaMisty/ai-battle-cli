@@ -27,9 +27,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/vmos-dev/ai-battle-cli.git"
+    "url": "https://github.com/NyaMisty/ai-battle-cli.git"
   },
-  "homepage": "https://github.com/vmos-dev/ai-battle-cli",
+  "homepage": "https://github.com/NyaMisty/ai-battle-cli",
   "keywords": [
     "ai",
     "debate",
