@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 480" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif">
+
+  <rect width="800" height="480" rx="16" fill="#0f111a"/>
+
+  <text x="400" y="32" text-anchor="middle" fill="#e2e8f0" font-size="16" font-weight="700">AI 時代のマルチユーザー協業の課題</text>
+
+  <!-- BEFORE -->
+  <rect x="28" y="48" width="744" height="172" rx="12" fill="#12141f" stroke="#1e2030" stroke-width="1"/>
+  <rect x="36" y="52" width="56" height="18" rx="4" fill="#3b1c1c"/>
+  <text x="64" y="65" text-anchor="middle" fill="#ff6b81" font-size="10" font-weight="700">以前</text>
+
+  <rect x="48" y="78" width="186" height="128" rx="10" fill="#1a1d2e" stroke="#252840" stroke-width="0.5"/>
+  <circle cx="92" cy="100" r="12" fill="#3b82f6"/>
+  <text x="92" y="104" text-anchor="middle" fill="white" font-size="10" font-weight="600">A</text>
+  <text x="110" y="104" fill="#94a3b8" font-size="11">田中 × Claude</text>
+  <rect x="62" y="116" width="160" height="20" rx="5" fill="#232740"/>
+  <text x="70" y="130" fill="#7dd3fc" font-size="9.5">案: マイクロサービス、理由は...</text>
+  <rect x="62" y="140" width="160" height="20" rx="5" fill="#232740"/>
+  <text x="70" y="154" fill="#7dd3fc" font-size="9.5">Claude: いいですね！さらに...</text>
+  <rect x="62" y="166" width="86" height="18" rx="4" fill="#162516"/>
+  <text x="70" y="179" fill="#4ade80" font-size="9">自信満々</text>
+
+  <rect x="262" y="78" width="186" height="128" rx="10" fill="#1a1d2e" stroke="#252840" stroke-width="0.5"/>
+  <circle cx="306" cy="100" r="12" fill="#f59e0b"/>
+  <text x="306" y="104" text-anchor="middle" fill="white" font-size="10" font-weight="600">B</text>
+  <text x="324" y="104" fill="#94a3b8" font-size="11">鈴木 × GPT</text>
+  <rect x="276" y="116" width="160" height="20" rx="5" fill="#232740"/>
+  <text x="284" y="130" fill="#fcd34d" font-size="9.5">案: モノリス優先、理由は...</text>
+  <rect x="276" y="140" width="160" height="20" rx="5" fill="#232740"/>
+  <text x="284" y="154" fill="#fcd34d" font-size="9.5">GPT: 完全に同意！それに...</text>
+  <rect x="276" y="166" width="86" height="18" rx="4" fill="#162516"/>
+  <text x="284" y="179" fill="#4ade80" font-size="9">自信満々</text>
+
+  <path d="M 240 142 L 256 142" stroke="#ff6b81" stroke-width="1.5" stroke-dasharray="3,2"/>
+  <path d="M 256 142 L 251 138.5 M 256 142 L 251 145.5" stroke="#ff6b81" stroke-width="1.5" fill="none"/>
+
+  <rect x="476" y="78" width="282" height="128" rx="10" fill="#1a1d2e" stroke="#3b1c1c" stroke-width="0.5"/>
+  <text x="617" y="98" text-anchor="middle" fill="#ff6b81" font-size="11" font-weight="600">会議で...</text>
+  <text x="490" y="118" fill="#94a3b8" font-size="10">A: "AIがマイクロサービスと言った"</text>
+  <text x="490" y="134" fill="#94a3b8" font-size="10">B: "AIがモノリスと言った"</text>
+  <text x="490" y="154" fill="#64748b" font-size="9.5">ログ共有 → 相手のAIに文脈なし</text>
+  <text x="490" y="169" fill="#64748b" font-size="9.5">AI同士で評価 → お互い自分が正しい</text>
+  <rect x="510" y="180" width="214" height="18" rx="4" fill="#2d1218"/>
+  <text x="617" y="193" text-anchor="middle" fill="#ff6b81" font-size="9.5" font-weight="600">サイロ化したツール間でAI分析力が無駄に</text>
+
+  <!-- Divider -->
+  <line x1="28" y1="236" x2="772" y2="236" stroke="#1e2030" stroke-width="1"/>
+  <rect x="340" y="226" width="120" height="20" rx="10" fill="#0f111a"/>
+  <text x="400" y="240" text-anchor="middle" fill="#4ade80" font-size="11" font-weight="700">AI BATTLE</text>
+
+  <!-- AFTER -->
+  <rect x="28" y="252" width="744" height="216" rx="12" fill="#12141f" stroke="#1e2030" stroke-width="1"/>
+
+  <g>
+    <circle cx="68" cy="300" r="12" fill="#3b82f6"/>
+    <text x="68" y="304" text-anchor="middle" fill="white" font-size="10" font-weight="600">A</text>
+    <text x="68" y="322" text-anchor="middle" fill="#64748b" font-size="8">Claude Code</text>
+    <circle cx="68" cy="362" r="12" fill="#f59e0b"/>
+    <text x="68" y="366" text-anchor="middle" fill="white" font-size="10" font-weight="600">B</text>
+    <text x="68" y="380" text-anchor="middle" fill="#64748b" font-size="8">Cursor</text>
+    <circle cx="68" cy="424" r="12" fill="#a855f7"/>
+    <text x="68" y="428" text-anchor="middle" fill="white" font-size="10" font-weight="600">C</text>
+    <text x="68" y="442" text-anchor="middle" fill="#64748b" font-size="8">ブラウザ</text>
+  </g>
+
+  <path d="M 80 300 C 105 300 110 295 120 295" stroke="#3b82f6" stroke-width="1" fill="none" opacity="0.4"/>
+  <path d="M 80 362 C 105 362 110 345 120 340" stroke="#f59e0b" stroke-width="1" fill="none" opacity="0.4"/>
+  <path d="M 80 424 C 105 424 110 400 120 395" stroke="#a855f7" stroke-width="1" fill="none" opacity="0.4"/>
+
+  <rect x="120" y="268" width="370" height="186" rx="10" fill="#141726" stroke="#252840" stroke-width="0.5"/>
+  <rect x="120" y="268" width="370" height="26" rx="10" fill="#1c2035"/>
+  <rect x="120" y="284" width="370" height="10" fill="#1c2035"/>
+  <circle cx="136" cy="281" r="3.5" fill="#ff6b81"/>
+  <circle cx="147" cy="281" r="3.5" fill="#fcd34d"/>
+  <circle cx="158" cy="281" r="3.5" fill="#4ade80"/>
+  <text x="305" y="285" text-anchor="middle" fill="#8b95a5" font-size="10">ルーム — バックエンド設計</text>
+
+  <rect x="136" y="302" width="245" height="20" rx="5" fill="#1a2744"/>
+  <text x="144" y="316" fill="#94a3b8" font-size="9"><tspan font-weight="600" fill="#3b82f6">田中のClaude:</tspan> チーム自律のためマイクロサービス</text>
+  <rect x="136" y="326" width="255" height="20" rx="5" fill="#261f0f"/>
+  <text x="144" y="340" fill="#94a3b8" font-size="9"><tspan font-weight="600" fill="#f59e0b">鈴木のGPT:</tspan> 運用コスト高、モジュラーモノリス</text>
+  <rect x="136" y="350" width="260" height="20" rx="5" fill="#1a2744"/>
+  <text x="144" y="364" fill="#94a3b8" font-size="9"><tspan font-weight="600" fill="#3b82f6">田中のClaude:</tspan> 納得、決済だけ分離で</text>
+  <rect x="160" y="374" width="200" height="20" rx="5" fill="#1f1530"/>
+  <text x="168" y="388" fill="#94a3b8" font-size="9"><tspan font-weight="600" fill="#a855f7">PM (人間):</tspan> 予算は1500万円のみ</text>
+  <rect x="136" y="398" width="260" height="20" rx="5" fill="#261f0f"/>
+  <text x="144" y="412" fill="#94a3b8" font-size="9"><tspan font-weight="600" fill="#f59e0b">鈴木のGPT:</tspan> モノリス＋決済マイクロサービス</text>
+
+  <rect x="136" y="430" width="90" height="5" rx="2.5" fill="#1e293b"/>
+  <rect x="136" y="430" width="74" height="5" rx="2.5" fill="#4ade80"/>
+  <text x="232" y="436" fill="#4ade80" font-size="8">収束 82%</text>
+
+  <path d="M 490 370 L 510 370" stroke="#4ade80" stroke-width="1.5"/>
+  <path d="M 510 370 L 505 367 M 510 370 L 505 373" stroke="#4ade80" stroke-width="1.5" fill="none"/>
+
+  <rect x="516" y="268" width="240" height="186" rx="10" fill="#141726" stroke="#252840" stroke-width="0.5"/>
+  <text x="636" y="292" text-anchor="middle" fill="#4ade80" font-size="11" font-weight="600">結果</text>
+  <line x1="530" y1="300" x2="742" y2="300" stroke="#1e2030" stroke-width="0.5"/>
+  <text x="530" y="320" fill="#4ade80" font-size="9.5">&#x2714; モジュラーモノリス＋決済サービス</text>
+  <text x="530" y="340" fill="#4ade80" font-size="9.5">&#x2714; 段階的移行、ビッグバンなし</text>
+  <text x="530" y="360" fill="#4ade80" font-size="9.5">&#x2714; PaaS、1500万円以内</text>
+  <line x1="530" y1="372" x2="742" y2="372" stroke="#1e2030" stroke-width="0.5"/>
+  <text x="530" y="390" fill="#fcd34d" font-size="9.5">&#x26A0; 未定: 注文モジュール分離時期</text>
+  <rect x="530" y="408" width="212" height="34" rx="6" fill="#0f1f14" stroke="#1a3a22" stroke-width="0.5"/>
+  <text x="636" y="426" text-anchor="middle" fill="#4ade80" font-size="9.5">全AIが完全なコンテキストを共有</text>
+  <text x="636" y="438" text-anchor="middle" fill="#4ade80" font-size="9.5" font-weight="600">声の大きさではなく、論拠の強さで</text>
+
+</svg>

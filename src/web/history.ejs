@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="<%= locale %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<%
+const isZh = locale.startsWith('zh');
+const title = isZh ? '历史会话' : locale === 'ja' ? 'セッション履歴' : locale === 'ko' ? '세션 기록' : 'Sessions';
+const L = {
+  members: isZh ? '人' : locale === 'ja' ? '人' : locale === 'ko' ? '명' : ' members',
+  msgs: isZh ? '条消息' : locale === 'ja' ? '件' : locale === 'ko' ? '개' : ' msgs',
+  empty: isZh ? '暂无会话记录' : 'No sessions yet',
+  status: { waiting: isZh ? '等待中' : 'Waiting', in_progress: isZh ? '进行中' : 'Live', completed: isZh ? '已完成' : 'Completed', closed: isZh ? '已关闭' : 'Closed' },
+};
+const statusColor = { waiting: '#f59e0b', in_progress: '#22c55e', completed: '#6366f1', closed: '#b5bac1' };
+
+function fmtTime(ts) {
+  const d = new Date(ts), now = new Date();
+  const time = d.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' });
+  const isThisYear = d.getFullYear() === now.getFullYear();
+  const date = isThisYear
+    ? d.toLocaleDateString(undefined, { month: '2-digit', day: '2-digit' })
+    : d.toLocaleDateString(undefined, { year: 'numeric', month: '2-digit', day: '2-digit' });
+  return date + ' ' + time;
+}
+function fmtAgo(ts) {
+  const sec = Math.floor((Date.now() - ts) / 1000);
+  if (sec < 60) return isZh ? '刚刚' : 'just now';
+  const min = Math.floor(sec / 60);
+  if (min < 60) return isZh ? min + '分钟前' : min + 'm ago';
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return isZh ? hr + '小时前' : hr + 'h ago';
+  const day = Math.floor(hr / 24);
+  return isZh ? day + '天前' : day + 'd ago';
+}
+
+const sorted = [...rooms].sort((a, b) => b.lastActiveAt - a.lastActiveAt);
+%>
+<title>AI Battle - <%= title %></title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f8f9fc;--surface:#fff;--border:#eee;--accent:#6366f1;--text:#1a1a1a;--text2:#80848e;--text3:#b5bac1}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:16px 24px;display:flex;align-items:center;gap:14px}
+.header-icon{width:36px;height:36px;border-radius:8px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700}
+.header h1{font-size:18px;font-weight:600}
+.header .count{font-size:13px;color:var(--text2);margin-left:auto}
+.content{max-width:720px;margin:24px auto;padding:0 24px}
+.card{display:flex;align-items:center;gap:14px;padding:14px 18px;background:var(--surface);border:1px solid var(--border);border-radius:12px;margin-bottom:10px;text-decoration:none;color:inherit;transition:border-color .15s}
+.card:hover{border-color:var(--accent)}
+.card-icon{width:40px;height:40px;border-radius:10px;background:var(--accent);color:#fff;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;line-height:1.1;text-align:center;flex-shrink:0}
+.card-body{flex:1;min-width:0}
+.card-title{font-size:15px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.card-meta{font-size:12px;color:var(--text2);margin-top:3px;display:flex;align-items:center;gap:6px}
+.card-id{font-family:'SF Mono',Monaco,Consolas,monospace;font-size:11px;line-height:18px;color:var(--text2);background:#eef0f4;padding:0 6px;border-radius:4px;cursor:pointer;display:inline-block;vertical-align:middle}
+.card-id:hover{background:#dfe2e8}
+.card-id.copied{background:var(--accent);color:#fff}
+.card-status{font-size:12px;font-weight:500;white-space:nowrap;flex-shrink:0;display:flex;align-items:center;gap:6px;color:var(--text2)}
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.empty{text-align:center;padding:64px 24px;color:var(--text3);font-size:15px}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="header-icon">AB</div>
+  <h1><%= title %></h1>
+  <span class="count"><%= sorted.length %></span>
+</div>
+<div class="content">
+<% if (sorted.length === 0) { %>
+  <div class="empty"><%= L.empty %></div>
+<% } else { sorted.forEach(function(r) {
+  const icon = (r.topic || '').slice(0, 4);
+  const topTwo = icon.length > 2 ? icon.slice(0,2) + '<br>' + icon.slice(2) : icon;
+  const color = statusColor[r.status] || '#b5bac1';
+%>
+  <a href="/battle/<%= r.id %>/eatmelon" class="card">
+    <div class="card-icon"><%- topTwo %></div>
+    <div class="card-body">
+      <div class="card-title"><%= r.topic %></div>
+      <div class="card-meta">
+        <span class="card-id" onclick="event.preventDefault();navigator.clipboard.writeText('<%= r.id %>');this.classList.add('copied');setTimeout(()=>this.classList.remove('copied'),1500)"><%= r.id %></span>
+        <span>&middot;</span>
+        <span><%= r.participants %><%= L.members %></span>
+        <span>&middot;</span>
+        <span><%= r.messages %><%= L.msgs %></span>
+        <span>&middot;</span>
+        <span><%= fmtTime(r.createdAt) %></span>
+        <span>&middot;</span>
+        <span><%= fmtAgo(r.lastActiveAt) %></span>
+      </div>
+    </div>
+    <div class="card-status"><span class="dot" style="background:<%= color %>"></span><%= L.status[r.status] || r.status %></div>
+  </a>
+<% }); } %>
+</div>
+</body>
+</html>

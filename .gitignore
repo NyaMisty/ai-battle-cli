@@ -1,0 +1,12 @@
+node_modules/
+dist/
+/web/
+/locales/
+*.tsbuildinfo
+*.db
+.claude/CLAUDE.local.md
+.mcp.json
+.github-sync/
+.playwright-mcp/
+ai-battle-data/
+api-test-report.html

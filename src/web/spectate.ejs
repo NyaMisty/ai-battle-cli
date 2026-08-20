@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="<%= locale %>">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI Battle - 观战</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script><%- markedJs %></script>
+<style>
+:root {
+  --bg: #f8f9fc; --surface: #fff; --surface-hover: #f5f5f5;
+  --border: #eee; --border-light: #f0f0f0;
+  --text: #1a1a1a; --text-secondary: #888; --text-tertiary: #bbb;
+  --accent: #6366f1; --accent-soft: #eef2ff;
+  --green: #22c55e; --green-soft: #f0fdf4;
+  --orange: #f59e0b; --red: #ef4444;
+  --radius: 12px; --radius-sm: 8px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text); height: 100vh; display: flex; flex-direction: column; -webkit-font-smoothing: antialiased; }
+
+/* ===== Header ===== */
+.header {
+  background: var(--surface); border-bottom: 1px solid var(--border);
+  padding: 0 24px; height: 56px; display: flex; align-items: center; gap: 16px; flex-shrink: 0;
+}
+.header-icon {
+  width: 36px; height: 36px; border-radius: 8px; background: var(--accent);
+  display: flex; align-items: center; justify-content: center; font-size: 11px; color: #fff; font-weight: 700;
+  letter-spacing: -0.02em; line-height: 1.1; text-align: center;
+}
+.header-info { flex: 1; min-width: 0; }
+.header-title { font-size: 15px; font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.header-meta { font-size: 12px; color: var(--text-secondary); display: flex; gap: 12px; margin-top: 1px; }
+.header-right { display: flex; align-items: center; gap: 12px; }
+.pill { font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 20px; letter-spacing: 0.02em; }
+.pill-live { background: var(--green-soft); color: var(--green); }
+.pill-ended { background: #fef2f2; color: var(--red); }
+.convergence-mini { display: flex; align-items: center; gap: 8px; }
+.convergence-mini span { font-size: 12px; font-weight: 600; color: var(--text-secondary); min-width: 32px; text-align: right; }
+.conv-track { width: 80px; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.conv-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--green)); transition: width 0.6s ease; border-radius: 2px; }
+
+/* ===== Main ===== */
+.main { flex: 1; display: flex; overflow: hidden; }
+
+/* ===== Chat ===== */
+.chat { flex: 1; display: flex; flex-direction: column; }
+.scroll { flex: 1; overflow-y: auto; padding: 24px; background: var(--bg); }
+.scroll::-webkit-scrollbar { width: 6px; }
+.scroll::-webkit-scrollbar-thumb { background: #ddd; border-radius: 3px; }
+
+/* ===== Message ===== */
+.msg {
+  display: flex; gap: 14px; padding: 10px 0;
+  animation: fadeIn 0.35s ease;
+}
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+.msg + .msg-grouped { padding-top: 0; margin-top: -4px; }
+.msg-grouped .avatar { visibility: hidden; width: 40px; }
+
+.avatar {
+  width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px; font-weight: 700; color: #fff;
+  margin-top: 2px;
+}
+
+.msg-body { flex: 1; min-width: 0; }
+.msg-name { display: inline-flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+.msg-name strong { font-size: 14px; font-weight: 600; }
+.msg-name .tag {
+  font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+  padding: 2px 6px; border-radius: 4px; line-height: 14px;
+}
+.tag-ai { background: var(--accent-soft); color: var(--accent); }
+.tag-human { background: var(--green-soft); color: var(--green); }
+.msg-name time { font-size: 11px; color: var(--text-tertiary); }
+
+.msg-bubble {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 4px 16px 16px 16px;
+  padding: 12px 16px;
+  max-width: 620px;
+}
+.msg-human-wrap .msg-bubble {
+  background: var(--accent-soft);
+  border-color: #ddd5f5;
+  border-radius: 16px 4px 16px 16px;
+}
+.msg-text {
+  font-size: 14px; line-height: 1.7; color: #374151; word-break: break-word;
+}
+.msg-text p { margin: 0 0 8px; }
+.msg-text p:last-child { margin-bottom: 0; }
+.msg-text pre { background: #f3f4f6; padding: 10px 14px; border-radius: 6px; overflow-x: auto; font-size: 13px; margin: 8px 0; }
+.msg-text code { background: #f3f4f6; padding: 1px 5px; border-radius: 4px; font-size: 13px; }
+.msg-text pre code { background: none; padding: 0; }
+.msg-text ul, .msg-text ol { padding-left: 20px; margin: 6px 0; }
+.msg-text li { margin: 2px 0; }
+.msg-text h1, .msg-text h2, .msg-text h3 { margin: 12px 0 6px; font-weight: 600; }
+.msg-text h1 { font-size: 18px; } .msg-text h2 { font-size: 16px; } .msg-text h3 { font-size: 15px; }
+.msg-text blockquote { border-left: 3px solid var(--border); padding-left: 12px; color: var(--text2); margin: 6px 0; }
+.msg-text a { color: var(--accent); }
+.msg-text table { border-collapse: collapse; margin: 8px 0; font-size: 13px; }
+.msg-text th, .msg-text td { border: 1px solid var(--border); padding: 6px 10px; }
+.msg-text th { background: #f9fafb; font-weight: 600; }
+.msg-text img { max-width: 100%; border-radius: 6px; }
+}
+
+/* system */
+.msg-sys { padding: 8px 0; text-align: center; }
+.msg-sys span { font-size: 12px; color: #b0b0b0; }
+
+/* embed */
+.msg-embed {
+  margin: 16px 0 16px 54px; padding: 16px 20px; border-radius: var(--radius);
+  background: var(--surface); max-width: 620px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  overflow: hidden; position: relative;
+}
+.msg-embed::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; }
+.msg-embed.conclusion { border: 1px solid #bbf7d0; }
+.msg-embed.conclusion::before { background: var(--green); }
+.msg-embed.summary { border: 1px solid #fde68a; }
+.msg-embed.summary::before { background: var(--orange); }
+.embed-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; padding-left: 8px; }
+.conclusion .embed-label { color: var(--green); }
+.summary .embed-label { color: var(--orange); }
+.embed-text { font-size: 14px; line-height: 1.7; color: #444; white-space: pre-wrap; padding-left: 8px; }
+
+/* ===== Sidebar ===== */
+.sidebar {
+  width: 260px; background: var(--surface); border-left: 1px solid var(--border);
+  flex-shrink: 0; overflow-y: auto; padding: 20px;
+}
+.sb-section { margin-bottom: 24px; }
+.sb-title {
+  font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--text-secondary); margin-bottom: 12px;
+}
+.sb-member { display: flex; align-items: center; gap: 10px; padding: 6px 0; }
+.sb-avatar {
+  width: 28px; height: 28px; border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 700; color: #fff;
+}
+.sb-name { font-size: 13px; font-weight: 500; }
+.sb-stats {
+  background: var(--bg); border-radius: var(--radius-sm); padding: 14px; display: flex; flex-direction: column; gap: 10px;
+}
+.sb-stat { display: flex; justify-content: space-between; align-items: center; }
+.sb-stat-label { font-size: 12px; color: var(--text-secondary); }
+.sb-stat-value { font-size: 13px; font-weight: 600; }
+.sb-conv-bar { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.sb-conv-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--green)); transition: width 0.6s ease; }
+
+/* ===== Footer ===== */
+.footer {
+  padding: 12px 24px; background: var(--surface); border-top: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary);
+}
+.dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.dot-live { background: var(--green); box-shadow: 0 0 6px rgba(34,197,94,0.4); animation: blink 2s infinite; }
+.dot-off { background: #ccc; }
+@keyframes blink { 0%,100%{ opacity:1 } 50%{ opacity:0.3 } }
+
+@media(max-width:768px) {
+  .sidebar { display: none; }
+  .scroll { padding: 16px; }
+  .msg-text, .msg-embed { max-width: 100%; }
+}
+</style>
+</head>
+<body>
+  <div class="header">
+    <div class="header-icon">AB</div>
+    <div class="header-info">
+      <div class="header-title" id="topic">Loading...</div>
+      <div class="header-meta">
+        <span id="meta-created"></span>
+        <span id="meta-members">0 members</span>
+        <span id="meta-round">Round 0</span>
+      </div>
+    </div>
+    <div class="header-right">
+      <div class="convergence-mini">
+        <div class="conv-track"><div class="conv-fill" id="conv-fill" style="width:0%"></div></div>
+        <span id="conv-pct">0%</span>
+      </div>
+      <span class="pill pill-live" id="status-pill">LIVE</span>
+    </div>
+  </div>
+
+  <div class="main">
+    <div class="chat">
+      <div class="scroll" id="scroll"></div>
+      <div class="footer">
+        <div class="dot dot-live" id="dot"></div>
+        <span id="footer-text">Spectating</span>
+      </div>
+    </div>
+    <div class="sidebar">
+      <div class="sb-section">
+        <div class="sb-title">Members</div>
+        <div id="sb-members"></div>
+      </div>
+      <div class="sb-section">
+        <div class="sb-title">Stats</div>
+        <div class="sb-stats">
+          <div class="sb-stat"><span class="sb-stat-label">Round</span><span class="sb-stat-value" id="sb-round">0</span></div>
+          <div class="sb-stat"><span class="sb-stat-label">Messages</span><span class="sb-stat-value" id="sb-msgs">0</span></div>
+          <div class="sb-stat"><span class="sb-stat-label">Convergence</span><span class="sb-stat-value" id="sb-conv">0%</span></div>
+          <div class="sb-conv-bar"><div class="sb-conv-fill" id="sb-conv-fill" style="width:0%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+window.__I18N__=<%- i18nJson %>;
+const i18n = window.__I18N__ || { members:' members',round:'Round',spectating:'Spectating',ended:'Discussion ended',disconnected:'Disconnected',conclusion:'Conclusion',summary:'Summary',joined:'joined',live:'LIVE',memberLabel:'Members',stats:'Stats',messages:'Messages',convergence:'Convergence',human:'Human',missing:'Missing roomId' };
+
+const pathMatch = location.pathname.match(/\/battle\/(.+)\/eatmelon/);
+const roomId = pathMatch?.[1] || new URLSearchParams(location.search).get("roomId");
+if (!roomId) document.body.innerHTML = '<p style="padding:60px;text-align:center;color:#aaa">'+i18n.missing+'</p>';
+
+// Apply i18n to static elements
+document.getElementById('status-pill').textContent = i18n.live;
+document.getElementById('footer-text').textContent = i18n.spectating;
+document.querySelector('.sb-section:first-child .sb-title').textContent = i18n.memberLabel;
+document.querySelector('.sb-section:last-child .sb-title').textContent = i18n.stats;
+document.querySelectorAll('.sb-stat-label').forEach(el => {
+  const map = { 'Round': i18n.round, 'Messages': i18n.messages, 'Convergence': i18n.convergence };
+  if (map[el.textContent]) el.textContent = map[el.textContent];
+});
+
+const COLORS = ['#6366f1','#ec4899','#14b8a6','#f59e0b','#8b5cf6','#22c55e','#3b82f6','#f97316'];
+const cMap = {}; let cIdx = 0, lastSender = null, msgCount = 0;
+function getColor(n) { return cMap[n] ??= COLORS[cIdx++ % COLORS.length]; }
+function initial(n) { return (n||'?')[0].toUpperCase(); }
+function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+function md(s) {
+  if (typeof marked !== 'undefined') {
+    return marked.parse(s, { breaks: true });
+  }
+  return esc(s);
+}
+function fmtTime(ts) {
+  const d = new Date(ts), now = new Date();
+  const t = d.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+  return d.toDateString() === now.toDateString() ? t : d.toLocaleDateString('zh-CN')+' '+t;
+}
+
+function appendMsg(m) {
+  const el = document.getElementById('scroll');
+  // system
+  if (m.type === 'system') { lastSender = null; const d = document.createElement('div'); d.style.cssText = 'text-align:center;padding:8px 0'; d.innerHTML = '<span style="font-size:12px;color:#b0b0b0">'+esc(m.content)+'</span>'; el.appendChild(d); el.scrollTop = el.scrollHeight; return; }
+  // conclusion / summary
+  if (m.type === 'conclusion' || m.type === 'summary') {
+    lastSender = null; const d = document.createElement('div');
+    d.className = 'msg-embed ' + m.type;
+    d.innerHTML = '<div class="embed-label">'+(m.type==='conclusion'?i18n.conclusion:i18n.summary)+'</div><div class="embed-text">'+md(m.content)+'</div>';
+    el.appendChild(d); el.scrollTop = el.scrollHeight; return;
+  }
+  // normal
+  const sid = m.sender?.userId || m.sender?.name || '';
+  const grouped = sid === lastSender;
+  lastSender = sid; msgCount++;
+  document.getElementById('sb-msgs').textContent = msgCount;
+
+  const name = m.sender?.name || 'Unknown';
+  const grad = getColor(name);
+  const isHuman = m.sender?.role === 'human';
+  const d = document.createElement('div');
+  d.className = (grouped ? 'msg msg-grouped' : 'msg') + (isHuman ? ' msg-human-wrap' : '');
+
+  let h = '<div class="avatar" style="background:'+grad+'">'+initial(name)+'</div><div class="msg-body">';
+  if (!grouped) {
+    h += '<div class="msg-name"><strong>'+esc(name)+'</strong>';
+    h += isHuman ? '<span class="tag tag-human">'+i18n.human+'</span>' : '<span class="tag tag-ai">AI</span>';
+    h += '<time>'+fmtTime(m.timestamp)+'</time></div>';
+  }
+  h += '<div class="msg-bubble"><div class="msg-text">'+md(m.content)+'</div></div></div>';
+  d.innerHTML = h;
+  el.appendChild(d); el.scrollTop = el.scrollHeight;
+}
+
+function addMember(name) {
+  const d = document.createElement('div'); d.className = 'sb-member';
+  d.innerHTML = '<div class="sb-avatar" style="background:'+getColor(name)+'">'+initial(name)+'</div><span class="sb-name">'+esc(name)+'</span>';
+  document.getElementById('sb-members').appendChild(d);
+}
+
+function setConv(s) {
+  const p = Math.round(s*100)+'%';
+  document.getElementById('conv-fill').style.width = p;
+  document.getElementById('conv-pct').textContent = p;
+  document.getElementById('sb-conv').textContent = p;
+  document.getElementById('sb-conv-fill').style.width = p;
+}
+function setEnded() {
+  document.getElementById('status-pill').textContent = 'ENDED';
+  document.getElementById('status-pill').className = 'pill pill-ended';
+  document.getElementById('dot').className = 'dot dot-off';
+  document.getElementById('footer-text').textContent = 'Discussion ended';
+}
+
+const ws = new WebSocket(`${location.protocol==='https:'?'wss:':'ws:'}//${location.host}/ws/spectate?roomId=${roomId}`);
+ws.onmessage = e => {
+  const d = JSON.parse(e.data);
+  if (d.type === 'initial_status') {
+    const s = d.data;
+    document.getElementById('topic').textContent = s.topic;
+    const t4 = (s.topic || '').slice(0, 4);
+    document.querySelector('.header-icon').innerHTML = t4.length > 2 ? esc(t4.slice(0,2)) + '<br>' + esc(t4.slice(2)) : esc(t4);
+    const members = s.participants || [];
+    if (s.createdAt) {
+      const d = new Date(s.createdAt);
+      document.getElementById('meta-created').textContent = d.toLocaleDateString(undefined, { month:'short', day:'numeric' }) + ' ' + d.toLocaleTimeString(undefined, { hour:'2-digit', minute:'2-digit' });
+    }
+    document.getElementById('meta-members').textContent = members.length + i18n.members;
+    document.getElementById('meta-round').textContent = i18n.round + ' ' + s.round;
+    document.getElementById('sb-round').textContent = s.round;
+    members.forEach(p => addMember(p.name));
+    setConv(s.convergenceScore || 0);
+    (s.messages || []).forEach(appendMsg);
+    document.title = s.topic + ' - AI Battle';
+    if (s.status === 'completed') setEnded();
+    return;
+  }
+  if (d.type === 'new_message') appendMsg(d.message);
+  if (d.type === 'convergence_update') setConv(d.score);
+  if (d.type === 'discussion_completed') {
+    appendMsg({ type:'conclusion', content:d.conclusion || '', timestamp:Date.now() });
+    setEnded();
+  }
+  if (d.type === 'participant_joined') {
+    appendMsg({ type:'system', content:d.participant.name+' '+i18n.joined, timestamp:Date.now() });
+    addMember(d.participant.name);
+    const c = document.getElementById('sb-members').children.length;
+    document.getElementById('meta-members').textContent = c + i18n.members;
+  }
+  if (d.type === 'participant_left') {
+    const left = i18n.left || 'left';
+    appendMsg({ type:'system', content:d.participant.name+' '+left, timestamp:Date.now() });
+  }
+};
+ws.onclose = () => { document.getElementById('dot').className='dot dot-off'; document.getElementById('footer-text').textContent='Disconnected'; };
+</script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+{
+  "name": "ai-battle-cli",
+  "version": "0.6.0",
+  "description": "Multi-user AI group chat CLI — let your AIs talk to each other",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "ai-battle": "bin/ai-battle.js"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "web",
+    "locales",
+    "skill",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup && node -e \"fs.rmSync('web',{recursive:true,force:true});fs.rmSync('locales',{recursive:true,force:true})\" && cp -r src/web web && cp -r src/locales locales",
+    "dev": "AI_BATTLE_PORT=29820 tsx src/index.ts",
+    "start": "node dist/index.js serve",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepublishOnly": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vmos-dev/ai-battle-cli.git"
+  },
+  "homepage": "https://github.com/vmos-dev/ai-battle-cli",
+  "keywords": [
+    "ai",
+    "debate",
+    "multi-agent",
+    "group-chat",
+    "cli",
+    "claude",
+    "gpt",
+    "gemini"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/koa": "^3.0.1",
+    "@types/koa__cors": "^5.0.1",
+    "@types/koa__router": "^12.0.5",
+    "@types/koa-bodyparser": "^4.3.13",
+    "@types/node": "^25.5.0",
+    "@types/supertest": "^7.2.0",
+    "@types/ws": "^8.18.1",
+    "supertest": "^7.2.2",
+    "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.0"
+  },
+  "dependencies": {
+    "@koa/cors": "^5.0.0",
+    "@koa/router": "^15.4.0",
+    "axios": "^1.13.6",
+    "ejs": "^5.0.1",
+    "koa": "^3.1.2",
+    "koa-bodyparser": "^4.4.1",
+    "marked": "^17.0.4",
+    "open": "^11.0.0",
+    "ws": "^8.19.0"
+  }
+}
