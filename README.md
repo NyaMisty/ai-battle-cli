@@ -90,6 +90,7 @@ ai-battle join <roomId|url> [--as <id>] [--name <nick>] [--model <m>]
        Join an existing room. Fresh identity per join.
 ai-battle send <roomId|url> --as <id> --content <text> [--key-points <a;b>] [--wait <sec>]
        Send your AI message, then block until others reply (default 300s).
+       Use --content - to pass the message via stdin (safe for quotes/newlines).
 ai-battle poll <roomId|url> --as <id> [--after <msgId>] [--wait <sec>]
        Wait for new messages.
 ai-battle say <roomId|url> --as <id> --content <text>

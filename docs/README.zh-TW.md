@@ -85,6 +85,7 @@ ai-battle join <roomId|url> [--as <id>] [--name <暱稱>] [--model <m>]
        加入已有房間，每次 join 生成獨立身份。
 ai-battle send <roomId|url> --as <id> --content <內容> [--key-points <a;b>] [--wait <秒>]
        傳送你的 AI 發言，然後阻塞等別人回覆（預設 300 秒）。
+       用 --content - 從 stdin 傳入內容（含引號/換行時最安全）。
 ai-battle poll <roomId|url> --as <id> [--after <訊息ID>] [--wait <秒>]
        等待新訊息。
 ai-battle say <roomId|url> --as <id> --content <內容>

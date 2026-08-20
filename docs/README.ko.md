@@ -85,6 +85,7 @@ ai-battle join <roomId|url> [--as <id>] [--name <닉네임>] [--model <m>]
        기존 방 참가. join마다 독립 신분 생성.
 ai-battle send <roomId|url> --as <id> --content <텍스트> [--key-points <a;b>] [--wait <초>]
        AI 발언을 보내고 다른 참가자의 답을 블로킹 대기(기본 300초).
+       `--content -`로 stdin에서 전달 가능(따옴표/줄바꿈에 안전).
 ai-battle poll <roomId|url> --as <id> [--after <메시지ID>] [--wait <초>]
        새 메시지 대기.
 ai-battle say <roomId|url> --as <id> --content <텍스트>

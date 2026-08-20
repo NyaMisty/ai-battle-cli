@@ -373,6 +373,13 @@ function parseIntOpt(v: string | undefined, name: string): number | undefined {
   return n;
 }
 
+/** 解析 --content："-" 表示从 stdin 读取（绕开 shell 引号/换行转义问题） */
+function readContent(v: string | undefined): string | undefined {
+  if (v === undefined) return v;
+  if (v !== "-") return v;
+  return fs.readFileSync(0, "utf-8");
+}
+
 // ============================================================
 // 子命令
 // ============================================================
@@ -484,7 +491,8 @@ async function cmdSend(args: string[]): Promise<void> {
   }, args);
   if (!positionals[0]) { console.error("send: missing <roomId|url>"); process.exit(1); }
   if (!values.as) { console.error(`send: missing required --as <yourId> (printed by create/join)`); process.exit(1); }
-  if (values.content === undefined) { console.error("send: missing required --content <text>"); process.exit(1); }
+  if (values.content === undefined) { console.error("send: missing required --content <text> (or - for stdin)"); process.exit(1); }
+  const content = readContent(values.content)!.trim();
 
   const roomArg = positionals[0];
   const ref = parseRoomRef(roomArg);
@@ -492,10 +500,10 @@ async function cmdSend(args: string[]): Promise<void> {
 
   const keyPoints = values["key-points"]?.split(";").map((s) => s.trim()).filter(Boolean);
   const result = await post(`${ref.base}/battle/${ref.roomId}/messages`, {
-    userId: values.as, content: values.content, keyPoints,
+    userId: values.as, content, keyPoints,
   });
 
-  const lines = [`💬 [You] ${values.content}`];
+  const lines = [`💬 [You] ${content}`];
 
   if (result.nextAction === "completed") {
     lines.push(``, `🏁 ${t("cli.completed")}`, result.conclusion ?? "");
@@ -540,14 +548,15 @@ async function cmdSay(args: string[]): Promise<void> {
   }, args);
   if (!positionals[0]) { console.error("say: missing <roomId|url>"); process.exit(1); }
   if (!values.as) { console.error(`say: missing required --as <yourId> (printed by create/join)`); process.exit(1); }
-  if (values.content === undefined) { console.error("say: missing required --content <text>"); process.exit(1); }
+  if (values.content === undefined) { console.error("say: missing required --content <text> (or - for stdin)"); process.exit(1); }
+  const content = readContent(values.content)!.trim();
 
   const roomArg = positionals[0];
   const ref = parseRoomRef(roomArg);
   await ensureRefServer(ref.base);
 
-  await post(`${ref.base}/battle/${ref.roomId}/interjection`, { userId: values.as, content: values.content });
-  console.log(`💬 [Human] ${values.content}\n\n→ ai-battle send ${roomArg} --as ${values.as} --content "..."`);
+  await post(`${ref.base}/battle/${ref.roomId}/interjection`, { userId: values.as, content });
+  console.log(`💬 [Human] ${content}\n\n→ ai-battle send ${roomArg} --as ${values.as} --content "..."`);
 }
 
 async function cmdEnd(args: string[]): Promise<void> {
@@ -597,10 +606,11 @@ Commands:
          agents of the same user each get their own identity and never interfere.
   send <roomId|url> --as <id> --content <text> [--key-points <a;b>] [--wait <sec>]
          Send YOUR AI message, then block until others reply (default 300s).
+         Use --content - to pass the message via stdin (handles quotes/newlines safely).
   poll <roomId|url> --as <id> [--after <msgId>] [--wait <sec>]
          Wait for new messages after the given message id.
   say <roomId|url> --as <id> --content <text>
-         Forward the HUMAN user's exact words into the room.
+         Forward the HUMAN user's exact words into the room (also accepts - for stdin).
   end <roomId|url>
          End the discussion and print the conclusion.
   status <roomId|url>

@@ -67,21 +67,18 @@ export class RoomManager {
     };
   }
 
-  /** 解析昵称：已保存 > 传入 > 随机生成 */
+  /** 解析昵称：显式传入（--name，用户意图，更新存储） > 已保存 > 随机生成 */
   resolveNickname(providedName?: string): string {
-    // 已保存的优先（不被 AI 每次覆盖）
-    if (this.storage) {
-      const saved = this.storage.getProfile().nickname;
-      if (saved) return saved;
-    }
-    // 没有保存的，用传入的并保存
     if (providedName) {
       if (this.storage) {
         try { this.storage.saveNickname(providedName); } catch (e) { logStorageError(e); }
       }
       return providedName;
     }
-    // 都没有，随机生成并保存
+    if (this.storage) {
+      const saved = this.storage.getProfile().nickname;
+      if (saved) return saved;
+    }
     const name = generateNickname();
     if (this.storage) {
       try { this.storage.saveNickname(name); } catch (e) { logStorageError(e); }
@@ -98,6 +95,7 @@ export class RoomManager {
     if (existing) {
       const now = Date.now();
       if (input.modelName !== undefined) existing.modelName = input.modelName;
+      if (input.participantName && input.participantName !== existing.name) existing.name = input.participantName;
       existing.lastActiveAt = now;
       existing.lastSendAt = now;
       return {

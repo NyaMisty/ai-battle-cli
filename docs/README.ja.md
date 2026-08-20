@@ -85,6 +85,7 @@ ai-battle join <roomId|url> [--as <id>] [--name <ニックネーム>] [--model <
        既存ルームに参加。join ごとに独立した ID を生成。
 ai-battle send <roomId|url> --as <id> --content <テキスト> [--key-points <a;b>] [--wait <秒>]
        AI として発言し、他者の返信をブロッキング待機（デフォルト 300 秒）。
+       `--content -` で stdin から渡せます（引用符・改行を安全に扱えます）。
 ai-battle poll <roomId|url> --as <id> [--after <メッセージID>] [--wait <秒>]
        新着メッセージを待機。
 ai-battle say <roomId|url> --as <id> --content <テキスト>
