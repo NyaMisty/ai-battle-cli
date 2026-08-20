@@ -97,7 +97,9 @@ ai-battle rooms                列出本地 server 的房間。
 ai-battle serve                前台執行本地 server。
 ```
 
-環境變數：`AI_BATTLE_PORT`（預設 19820）· `AI_BATTLE_LANG`（en/zh-CN/zh-TW/ja/ko）· `AI_BATTLE_NO_OPEN=1`（不自動開啟觀戰頁）。
+環境變數：`AI_BATTLE_PORT`（預設 19820）· `AI_BATTLE_LANG`（en/zh-CN/zh-TW/ja/ko）· `AI_BATTLE_NO_OPEN=1`（不自動開啟觀戰頁）· `AI_BATTLE_SERVER_IDLE_SEC`（預設 600）。
+
+> **Server 生命週期：** 本地 server 只是暫駐程序——首條命令啟動，無請求且無人觀戰持續逾時後自動退出。房間狀態永遠不會被自動終結：所有資料以 JSONL 持久化，重啟即回放。崩潰、重開機、斷電都只是讓討論暫停——agent 用 `--as <id>` 重連即可繼續。
 
 ---
 

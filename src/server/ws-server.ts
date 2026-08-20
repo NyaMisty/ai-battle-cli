@@ -14,6 +14,11 @@ export class SpectateServer {
   private heartbeatInterval: ReturnType<typeof setInterval>;
   private getStatus: (input: { roomId: string }) => GetStatusOutput;
 
+  /** 当前观战连接数（server 空闲退出判断用：有观众就不退） */
+  get connectionCount(): number {
+    return this.clients.size;
+  }
+
   constructor(server: http.Server, getStatus: (input: { roomId: string }) => GetStatusOutput) {
     this.getStatus = getStatus;
 

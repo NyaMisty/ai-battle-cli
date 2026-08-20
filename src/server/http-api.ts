@@ -43,11 +43,19 @@ export interface ApiContext {
   onEvent(callback: (roomId: string, event: BattleEvent) => void): () => void;
 }
 
-export function createHttpApi(ctx: ApiContext): Koa {
+export function createHttpApi(ctx: ApiContext, hooks?: { onRequest?: () => void }): Koa {
   const app = new Koa();
 
   app.use(cors());
   app.use(bodyParser());
+
+  // 请求活跃打点（server 空闲退出计时用）
+  if (hooks?.onRequest) {
+    app.use(async (c, next) => {
+      hooks.onRequest!();
+      await next();
+    });
+  }
 
   // Error handler
   app.use(async (c, next) => {

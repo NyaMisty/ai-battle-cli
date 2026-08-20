@@ -102,7 +102,9 @@ ai-battle rooms                List rooms on the local server.
 ai-battle serve                Run the local server in the foreground.
 ```
 
-Env: `AI_BATTLE_PORT` (default 19820) · `AI_BATTLE_LANG` (en/zh-CN/zh-TW/ja/ko) · `AI_BATTLE_NO_OPEN=1` (skip auto-opening the spectate page).
+Env: `AI_BATTLE_PORT` (default 19820) · `AI_BATTLE_LANG` (en/zh-CN/zh-TW/ja/ko) · `AI_BATTLE_NO_OPEN=1` (skip auto-opening the spectate page) · `AI_BATTLE_SERVER_IDLE_SEC` (default 600).
+
+> **Server lifecycle:** the local server is a transient process — it starts on the first command and exits after `AI_BATTLE_SERVER_IDLE_SEC` with no requests and no spectating viewers. Room state is never auto-finalized: everything persists as JSONL and replays on restart, so a crash, reboot, or power loss just pauses the discussion — agents reconnect with `--as <id>` and keep going.
 
 ---
 

@@ -116,6 +116,10 @@ async function startServer(): Promise<void> {
 
   log("Starting HTTP server...");
 
+  // 无请求且无观战连接超过该时长后 server 自动退出（秒，默认 600）
+  const SERVER_IDLE_MS = parseInt(process.env.AI_BATTLE_SERVER_IDLE_SEC ?? "600", 10) * 1000;
+  let lastActivityAt = Date.now();
+
   let storage: Storage | undefined;
   try {
     storage = new Storage();
@@ -210,7 +214,7 @@ async function startServer(): Promise<void> {
     },
   };
 
-  const app = createHttpApi(localCtx);
+  const app = createHttpApi(localCtx, { onRequest: () => { lastActivityAt = Date.now(); } });
   const httpServer = http.createServer(app.callback());
 
   await new Promise<void>((resolve, reject) => {
@@ -220,6 +224,18 @@ async function startServer(): Promise<void> {
         spectateServer?.broadcastToRoom(roomId, event);
       });
       log(`HTTP server started: http://${getLocalIP()}:${PORT}/battle/`);
+
+      // 空闲自退：无 HTTP 请求且无观战连接持续超时后 server 直接退出。
+      // room 状态不因此改变 —— JSONL 回放后讨论照常继续（掉电/重启安全）。
+      // 下次任意 CLI 命令会按需重新拉起 server。
+      const idleCheck = setInterval(() => {
+        if (Date.now() - lastActivityAt > SERVER_IDLE_MS && (spectateServer?.connectionCount ?? 0) === 0) {
+          log(`Idle for ${Math.round(SERVER_IDLE_MS / 1000)}s (no requests, no viewers), shutting down`);
+          process.exit(0);
+        }
+      }, Math.min(30_000, SERVER_IDLE_MS / 2));
+      idleCheck.unref?.();
+
       resolve();
     });
     httpServer.on("error", reject);
@@ -643,7 +659,9 @@ Options:
   --wait <sec>   Max seconds to block waiting for replies (0 = don't wait).
 
 Env: AI_BATTLE_PORT (default 19820), AI_BATTLE_LANG (en / zh-CN / zh-TW / ja / ko),
-     AI_BATTLE_NO_OPEN=1 (do not auto-open the spectate page)`);
+     AI_BATTLE_NO_OPEN=1 (do not auto-open the spectate page),
+     AI_BATTLE_SERVER_IDLE_SEC (server exits after this many idle seconds, default 600;
+     rooms persist and resume when the server restarts)`);
 }
 
 // ============================================================

@@ -97,7 +97,9 @@ ai-battle rooms                로컬 서버의 방 목록.
 ai-battle serve                로컬 서버를 포그라운드로 실행.
 ```
 
-환경 변수: `AI_BATTLE_PORT` (기본 19820) · `AI_BATTLE_LANG` (en/zh-CN/zh-TW/ja/ko) · `AI_BATTLE_NO_OPEN=1` (관전 페이지 자동 열기 끄기).
+환경 변수: `AI_BATTLE_PORT` (기본 19820) · `AI_BATTLE_LANG` (en/zh-CN/zh-TW/ja/ko) · `AI_BATTLE_NO_OPEN=1` (관전 페이지 자동 열기 끄기) · `AI_BATTLE_SERVER_IDLE_SEC` (기본 600).
+
+> **Server 수명 주기:** 로컬 server는 임시 프로세스입니다——첫 명령으로 시작하고, 요청과 관전이 없는 상태가 지속되면 자동 종료합니다. 방 상태는 자동으로 종결되지 않습니다: 모든 데이터는 JSONL로 영속화되고 재시작 시 리플레이됩니다. 크래시·재부팅·정전도 토론을 일시 중지할 뿐——agent가 `--as <id>`로 재접속하면 이어서 계속할 수 있습니다.
 
 ---
 

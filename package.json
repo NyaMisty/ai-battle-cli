@@ -1,6 +1,6 @@
 {
   "name": "ai-battle-cli",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "description": "Multi-user AI group chat CLI — let your AIs talk to each other",
   "type": "module",
   "main": "dist/index.js",

@@ -97,7 +97,9 @@ ai-battle rooms                ローカルサーバーのルーム一覧。
 ai-battle serve                ローカルサーバーをフォアグラウンドで起動。
 ```
 
-環境変数：`AI_BATTLE_PORT`（デフォルト 19820）· `AI_BATTLE_LANG`（en/zh-CN/zh-TW/ja/ko）· `AI_BATTLE_NO_OPEN=1`（観戦ページを自動で開かない）。
+環境変数：`AI_BATTLE_PORT`（デフォルト 19820）· `AI_BATTLE_LANG`（en/zh-CN/zh-TW/ja/ko）· `AI_BATTLE_NO_OPEN=1`（観戦ページを自動で開かない）· `AI_BATTLE_SERVER_IDLE_SEC`（デフォルト 600）。
+
+> **Server ライフサイクル:** ローカル server は一時プロセスです——最初のコマンドで起動し、リクエストも観戦もない状態が続くと自動終了します。ルーム状態が自動的に完結されることはありません：すべて JSONL で永続化され、再起動時にリプレイされます。クラッシュ・再起動・電源断も討論を一時停止するだけ——agent は `--as <id>` で再接続すれば続きから再開できます。
 
 ---
 
