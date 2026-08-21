@@ -94,6 +94,23 @@ function parseRoomRef(arg: string): { base: string; roomId: string } {
   return { base: LOCAL_ORIGIN, roomId: arg };
 }
 
+// 本机地址集合（localhost + 所有网卡 IP）——create 打印的 joinUrl 用的是局域网 IP，
+// 拿这个 URL 回来时也必须识别为"本机"，否则不会按需拉起已自退的本地 server。
+const LOCAL_HOSTS = new Set(["localhost", "127.0.0.1", "::1", "0.0.0.0"]);
+for (const addrs of Object.values(os.networkInterfaces())) {
+  for (const a of addrs ?? []) LOCAL_HOSTS.add(a.address);
+}
+
+/** ref 是否指向本机默认端口的 server */
+function isLocalRef(base: string): boolean {
+  try {
+    const u = new URL(base);
+    return u.port === String(PORT) && LOCAL_HOSTS.has(u.hostname);
+  } catch {
+    return false;
+  }
+}
+
 // ============================================================
 // Server（serve 命令 / 后台自动拉起）
 // ============================================================
@@ -225,13 +242,16 @@ async function startServer(): Promise<void> {
       });
       log(`HTTP server started: http://${getLocalIP()}:${PORT}/battle/`);
 
-      // 空闲自退：无 HTTP 请求且无观战连接持续超时后 server 直接退出。
-      // room 状态不因此改变 —— JSONL 回放后讨论照常继续（掉电/重启安全）。
-      // 下次任意 CLI 命令会按需重新拉起 server。
+      // 空闲自退：无 HTTP 请求且无观战连接持续超时后优雅退出（停收新连接，
+      // 等在途请求完成，5 秒兜底）。room 状态不因此改变 —— JSONL 回放后讨论
+      // 照常继续（掉电/重启安全）。下次任意 CLI 命令会按需重新拉起 server。
       const idleCheck = setInterval(() => {
         if (Date.now() - lastActivityAt > SERVER_IDLE_MS && (spectateServer?.connectionCount ?? 0) === 0) {
+          clearInterval(idleCheck);
           log(`Idle for ${Math.round(SERVER_IDLE_MS / 1000)}s (no requests, no viewers), shutting down`);
-          process.exit(0);
+          httpServer.close(() => process.exit(0));
+          httpServer.closeIdleConnections?.();
+          setTimeout(() => process.exit(0), 5000).unref?.();
         }
       }, Math.min(30_000, SERVER_IDLE_MS / 2));
       idleCheck.unref?.();
@@ -271,9 +291,9 @@ async function ensureServerUp(): Promise<void> {
   throw new Error(`server failed to start on port ${PORT} (see ${LOG_FILE})`);
 }
 
-/** 远程房间直接连，本机房间才需要本地 server */
+/** 远程房间直接连；指向本机的（含局域网 IP URL）才需要按需拉起本地 server */
 async function ensureRefServer(base: string): Promise<void> {
-  if (base === LOCAL_ORIGIN) await ensureServerUp();
+  if (isLocalRef(base)) await ensureServerUp();
 }
 
 // ============================================================
@@ -300,6 +320,7 @@ async function waitForReplies(
 ): Promise<WaitResult> {
   const deadline = Date.now() + waitSec * 1000;
   let cursor = afterId;
+  let netErrors = 0; // 网络层错误次数（server 暂驻退出/掉电，可自愈重试）
 
   for (;;) {
     let result: any;
@@ -307,8 +328,21 @@ async function waitForReplies(
       const query = new URLSearchParams({ userId: pid });
       if (cursor) query.set("after", cursor);
       result = await get(`${base}/battle/${roomId}/messages?${query}`);
-    } catch {
-      // HTTP 错误（房间不存在、被踢等）→ 停止轮询
+      netErrors = 0;
+    } catch (e: any) {
+      if (e?.response) {
+        // 有 HTTP 应答：房间不存在、被踢等 → 真终止
+        return { msgs: [], lastId: cursor, completed: false, kicked: true };
+      }
+      // 网络层错误：本地 server 可能空闲自退/被杀/掉电 —— 按需拉起重试
+      netErrors++;
+      if (Date.now() < deadline && netErrors <= 10) {
+        if (isLocalRef(base)) {
+          try { await ensureServerUp(); } catch {}
+        }
+        await sleep(Math.min(netErrors * 1000, 5000));
+        continue;
+      }
       return { msgs: [], lastId: cursor, completed: false, kicked: true };
     }
 
